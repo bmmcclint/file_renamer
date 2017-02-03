@@ -47,9 +47,11 @@ public class converter {
         System.out.println("Album Artist: " + albArt + "\n");
         if (artist.contains("/") || title.contains("/")) {
           replaceTag(file, artist, title, filePath);
-        }
-        else {
+        } else {
           renameSong(file, artist, title, albArt);
+        }
+        if (artist == null || albArt == null) {
+          System.out.println("ID3 tags don't exist for artist and/or album artist");
         }
 
       } else if (!song.hasId3v2Tag()) {
@@ -68,11 +70,11 @@ public class converter {
         String artistReplace = artist.replace("/", " ");
         tag.setArtist(artistReplace);
         System.out.println("New Artitst: " + artistReplace);
-        
+
         String titleReplace = title.replace("/", " ");
         tag.setTitle(titleReplace);
         System.out.println("New Title: " + titleReplace + "\n");
-        
+
         newTags.close();
         renameSongNewTags(file, artistReplace, titleReplace);
       }
@@ -87,22 +89,25 @@ public class converter {
       if (artist != null) {
         file.renameTo(new File(path + title + " - " + artist + ".mp3"));
         System.out.println(file.getName());
-      }
-      else if (artist == null) {
-        file.renameTo(new File(path + albArt + " - " + title + ".mp3"));
+      } else if (artist == null) {
+        if (albArt == null) {
+          file.renameTo(new File(path + title + ".mp3"));
+        } else {
+          file.renameTo(new File(path + albArt + " - " + title + ".mp3"));
+        }
       }
       renamed.close();
     } catch (IOException e) {
     }
   }
-  
+
   public static void renameSongNewTags(File file, String artistReplace, String titleReplace) {
     String path = "/Users/bmcclint/Desktop/Renamed_Tracks/";
     try (FileInputStream newTagsName = new FileInputStream(file)) {
       file.renameTo(new File(path + artistReplace + " - " + titleReplace + ".mp3"));
       System.out.println(file.getName());
       newTagsName.close();
+    } catch (IOException e) {
     }
-    catch (IOException e) {}
   }
 }
