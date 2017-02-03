@@ -45,8 +45,12 @@ public class converter {
         System.out.println("Title: " + title);
         String albArt = tag.getAlbumArtist();
         System.out.println("Album Artist: " + albArt + "\n");
-        replaceTag(file, artist, title, filePath);
-        renameSong(file, artist, title, albArt);
+        if (tag.toString().contains("/")) {
+          replaceTag(file, artist, title, filePath);
+        }
+        else {
+          renameSong(file, artist, title, albArt);
+        }
 
       } else if (!song.hasId3v2Tag()) {
         System.out.println("Dig deeper! \n");
@@ -80,8 +84,13 @@ public class converter {
   public static void renameSong(File file, String title, String artist, String albArt) {
     String path = "/Users/bmcclint/Desktop/Renamed_Tracks/";
     try (FileInputStream renamed = new FileInputStream(file)) {
-      file.renameTo(new File(path + title + " - " + artist + ".mp3"));
-      System.out.println(file.getName());
+      if (artist != null) {
+        file.renameTo(new File(path + title + " - " + artist + ".mp3"));
+        System.out.println(file.getName());
+      }
+      else if (artist == null) {
+        file.renameTo(new File(path + albArt + " - " + title + ".mp3"));
+      }
       renamed.close();
     } catch (IOException e) {
     }
