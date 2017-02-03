@@ -45,7 +45,7 @@ public class converter {
         System.out.println("Title: " + title);
         String albArt = tag.getAlbumArtist();
         System.out.println("Album Artist: " + albArt + "\n");
-        if (tag.toString().contains("/")) {
+        if (artist.contains("/") || title.contains("/")) {
           replaceTag(file, artist, title, filePath);
         }
         else {
