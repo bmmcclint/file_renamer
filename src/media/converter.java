@@ -39,21 +39,22 @@ public class converter {
       Mp3File song = new Mp3File(filePath);
       if (song.hasId3v2Tag()) {
         ID3v2 tag = song.getId3v2Tag();
+        System.out.println("File size: " + file.length() + "bytes");
         String artist = tag.getArtist();
         System.out.println("Artist: " + artist);
         String title = tag.getTitle();
         System.out.println("Title: " + title);
         String albArt = tag.getAlbumArtist();
         System.out.println("Album Artist: " + albArt + "\n");
-        if (artist.contains("/") || title.contains("/")) {
+        if (artist == null) {
+          potsong.skip(file.length());
+        }
+        else if (artist.contains("/") || title.contains("/")) {
           replaceTag(file, artist, title, filePath);
-        } else {
+        }
+        else {
           renameSong(file, artist, title, albArt);
         }
-        if (artist == null || albArt == null) {
-          System.out.println("ID3 tags don't exist for artist and/or album artist");
-        }
-
       } else if (!song.hasId3v2Tag()) {
         System.out.println("Dig deeper! \n");
       }
@@ -62,7 +63,8 @@ public class converter {
     }
   }
 
-  private static void replaceTag(File file, String artist, String title, String filePath) {
+  private static void replaceTag(File file, String artist, String title, 
+          String filePath) {
     try (FileInputStream newTags = new FileInputStream(file)) {
       Mp3File song = new Mp3File(filePath);
       ID3v2 tag = song.getId3v2Tag();
@@ -82,8 +84,9 @@ public class converter {
 
     }
   }
-
-  public static void renameSong(File file, String title, String artist, String albArt) {
+  
+  public static void renameSong(File file, String title, String artist, 
+          String albArt) {
     String path = "/Users/bmcclint/Desktop/Renamed_Tracks/";
     try (FileInputStream renamed = new FileInputStream(file)) {
       if (artist != null) {
@@ -101,10 +104,12 @@ public class converter {
     }
   }
 
-  public static void renameSongNewTags(File file, String artistReplace, String titleReplace) {
+  public static void renameSongNewTags(File file, String artistReplace, 
+          String titleReplace) {
     String path = "/Users/bmcclint/Desktop/Renamed_Tracks/";
     try (FileInputStream newTagsName = new FileInputStream(file)) {
-      file.renameTo(new File(path + artistReplace + " - " + titleReplace + ".mp3"));
+      file.renameTo(new File(path + artistReplace + " - " + titleReplace + 
+              ".mp3"));
       System.out.println(file.getName());
       newTagsName.close();
     } catch (IOException e) {
