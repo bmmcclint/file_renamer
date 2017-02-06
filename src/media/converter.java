@@ -18,6 +18,8 @@ import java.io.IOException;
  */
 public class converter {
 
+  static String savDir = "/Users/bmcclint/Desktop/Renamed_Tracks/";
+
   public static void main(String[] args) {
     fileList(new File(args[0]));
   }
@@ -28,6 +30,7 @@ public class converter {
         fileList(f);
         System.out.println(f);
       } else if (f.getName().endsWith(".mp3")) {
+        createDir(f);
         getID3tags(f);
       }
     }
@@ -39,7 +42,6 @@ public class converter {
       Mp3File song = new Mp3File(filePath);
       if (song.hasId3v2Tag()) {
         ID3v2 tag = song.getId3v2Tag();
-        System.out.println("File size: " + file.length() + "bytes");
         String artist = tag.getArtist();
         System.out.println("Artist: " + artist);
         String title = tag.getTitle();
@@ -48,11 +50,9 @@ public class converter {
         System.out.println("Album Artist: " + albArt + "\n");
         if (artist == null) {
           potsong.skip(file.length());
-        }
-        else if (artist.contains("/") || title.contains("/")) {
+        } else if (artist.contains("/") || title.contains("/")) {
           replaceTag(file, artist, title, filePath);
-        }
-        else {
+        } else {
           renameSong(file, artist, title, albArt);
         }
       } else if (!song.hasId3v2Tag()) {
@@ -63,7 +63,7 @@ public class converter {
     }
   }
 
-  private static void replaceTag(File file, String artist, String title, 
+  private static void replaceTag(File file, String artist, String title,
           String filePath) {
     try (FileInputStream newTags = new FileInputStream(file)) {
       Mp3File song = new Mp3File(filePath);
@@ -84,8 +84,25 @@ public class converter {
 
     }
   }
-  
-  public static void renameSong(File file, String title, String artist, 
+
+  public static void createDir(File file) {
+    try {
+      FileInputStream newDir = new FileInputStream(file);             //creates new file input from console args
+      File dir = file.getParentFile();
+      String path = dir.getPath();                                    //gets the path of the file
+      String parentDir = path.substring(path.lastIndexOf("/"));       //returns the last index of the file path
+      
+      /*
+        * TO-DO make directory in new folder based on the last insdex of the 
+        * original file path given by user.
+       */
+      System.out.println(parentDir);
+    } catch (IOException e) {
+
+    }
+  }
+
+  public static void renameSong(File file, String title, String artist,
           String albArt) {
     String path = "/Users/bmcclint/Desktop/Renamed_Tracks/";
     try (FileInputStream renamed = new FileInputStream(file)) {
@@ -104,12 +121,12 @@ public class converter {
     }
   }
 
-  public static void renameSongNewTags(File file, String artistReplace, 
+  public static void renameSongNewTags(File file, String artistReplace,
           String titleReplace) {
     String path = "/Users/bmcclint/Desktop/Renamed_Tracks/";
     try (FileInputStream newTagsName = new FileInputStream(file)) {
-      file.renameTo(new File(path + artistReplace + " - " + titleReplace + 
-              ".mp3"));
+      file.renameTo(new File(path + artistReplace + " - " + titleReplace
+              + ".mp3"));
       System.out.println(file.getName());
       newTagsName.close();
     } catch (IOException e) {
